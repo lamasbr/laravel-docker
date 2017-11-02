@@ -1,43 +1,57 @@
-web:
-    image: nginx:latest
-    restart: always
-    ports:
-        - "80:80"
-    volumes:
-        - ./code:/code
-        - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
-    links:
-        - php
-        - db
+version: "3"
+services:
+
+    web:
+        image: nginx:latest
+        container_name: laravel_web
+        ports:
+            - "80:80"
+        volumes:
+            - ./code:/code
+            - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+        depends_on:
+            - php
+        deploy:
+            restart_policy:
+                condition: on-failure
  
-php:
-    image: projetusti/php
-    restart: always
-    links:
-        - db
-    volumes:
-        - ./code:/code
-        
-db:
-    image: mysql:latest
-    restart: always
-    ports:
-        - "3306:3306"
-    environment:
-        MYSQL_DATABASE: laravel
-        MYSQL_ROOT_PASSWORD: laravel
-        MYSQL_USER: laravel
-        MYSQL_PASSWORD: laravel
-    volumes:
-        - ./data:/var/lib/mysql
-        
-phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-        - "8080:80"
-    environment:
-        PMA_ARBITRARY: 1
-        PMA_HOST: db
-    links:
-        - db
+    php:
+        image: projetusti/php
+        container_name: laravel_php
+        volumes:
+            - ./code:/code
+        depends_on:
+            - db
+        deploy:
+            restart_policy:
+                condition: on-failure
+
+    db:
+        image: mysql:latest
+        container_name: laravel_db
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./data:/var/lib/mysql
+        deploy:
+            restart_policy:
+                condition: on-failure
+        environment:
+            MYSQL_DATABASE: laravel
+            MYSQL_ROOT_PASSWORD: laravel
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: laravel
+            
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: laravel_pma
+        ports:
+            - "8080:80"
+        depends_on:
+            - db
+        deploy:
+            restart_policy:
+                condition: on-failure
+        environment:
+            PMA_ARBITRARY: 1
+            PMA_HOST: db

@@ -11,6 +11,8 @@ services:
             - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
         depends_on:
             - php
+            - redis
+            - smtp
         deploy:
             restart_policy:
                 condition: on-failure
@@ -22,6 +24,8 @@ services:
             - ./code:/code
         depends_on:
             - db
+            - redis
+            - smtp
         deploy:
             restart_policy:
                 condition: on-failure
@@ -32,7 +36,7 @@ services:
         ports:
             - "3306:3306"
         volumes:
-            - ./data:/var/lib/mysql
+            - ./data/mysql:/var/lib/mysql
         deploy:
             restart_policy:
                 condition: on-failure
@@ -41,6 +45,25 @@ services:
             MYSQL_ROOT_PASSWORD: laravel
             MYSQL_USER: laravel
             MYSQL_PASSWORD: laravel
+            
+    redis:
+        image: redis:alpine
+        container_name: laravel_redis
+        volumes:
+            - ./data/redis:/data
+        deploy:
+            restart_policy:
+                condition: on-failure
+                
+    smtp:
+        image: tophfr/mailcatcher
+        container_name: laravel_mail
+        ports:
+            - "1025:25"
+            - "1080:80"
+        deploy:
+            restart_policy:
+                condition: on-failure
             
     phpmyadmin:
         image: phpmyadmin/phpmyadmin

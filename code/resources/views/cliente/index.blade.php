@@ -3,13 +3,21 @@
 @section('title', 'Listagem de clientes')
 
 @section('content')
-<h1>Clientes</h1>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">Clientes</div>
 
-<ul>
-    @foreach($clientes as $cliente)
-    <li>
-        <a href="//laravel.local/clientes/{{$cliente->id}}">{{$cliente->nome}} {{$cliente->sobrenome}}</a>
-    </li>
-    @endforeach
-</ul>
+                <div class="panel-body">
+                    <ul>
+                        @foreach($clientes as $cliente)
+                        <li><a href="//laravel.local/clientes/{{$cliente->id}}">{{$cliente->nome}} {{$cliente->sobrenome}}</a></li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
